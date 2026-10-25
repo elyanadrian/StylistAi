@@ -9,11 +9,14 @@ const SYSTEM = `You catalogue clothing for a personal wardrobe app. You'll see o
 
 Tag the item itself, ignoring the background, hanger, mannequin and any other garments in frame. If several items are equally prominent, tag the most central one. These tags drive automatic outfit filtering by weather and occasion, so judge formality and warmth for how the item would realistically be worn, not by color alone. A wool blazer is warm-ish and business-formal; a graphic hoodie is casual and mid-warmth.`;
 
-/**
- * Tags one clothing photo with Claude vision.
- * @param imageUrl short-lived signed URL to the image in Supabase Storage
- */
-export async function tagItemImage(imageUrl: string): Promise<{ tags: ItemTags; model: string }> {
+export type ItemImage = {
+  /** Base64-encoded image bytes. Sent inline because Anthropic can't fetch local Supabase URLs. */
+  data: string;
+  mediaType: "image/jpeg" | "image/png" | "image/webp";
+};
+
+/** Tags one clothing photo with Claude vision. */
+export async function tagItemImage(image: ItemImage): Promise<{ tags: ItemTags; model: string }> {
   const response = await anthropic().beta.messages.parse({
     model: TAGGING_MODEL,
     max_tokens: 8000,
@@ -25,7 +28,7 @@ export async function tagItemImage(imageUrl: string): Promise<{ tags: ItemTags; 
       {
         role: "user",
         content: [
-          { type: "image", source: { type: "url", url: imageUrl } },
+          { type: "image", source: { type: "base64", media_type: image.mediaType, data: image.data } },
           { type: "text", text: "Tag this item." },
         ],
       },

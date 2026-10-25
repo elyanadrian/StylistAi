@@ -22,7 +22,9 @@ async function AccountActions() {
   if (userId) {
     return (
       <div className="flex items-center gap-4">
-        <p className="text-zinc-600 dark:text-zinc-400">You&apos;re signed in.</p>
+        <Link href="/closet" className="flex h-10 items-center rounded-full bg-foreground px-5 text-sm font-medium text-background">
+          Go to closet
+        </Link>
         <SignOutButton />
       </div>
     );
