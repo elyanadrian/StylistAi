@@ -2,6 +2,7 @@ import "server-only";
 
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 
 import type { Database } from "@/lib/database.types";
 import { supabasePublishableKey, supabaseUrl } from "@/lib/supabase/env";
@@ -34,6 +35,9 @@ export async function createClient() {
 
 /** Returns the signed-in user's id, or null. Verifies the JWT, unlike getSession(). */
 export async function getUserId(): Promise<string | null> {
+  // Stop prerendering here: verifying the JWT compares its expiry with the current time,
+  // which Cache Components only allows at request time.
+  await connection();
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   return data?.claims.sub ?? null;

@@ -5,7 +5,7 @@ import type { Database } from "@/lib/database.types";
 import { supabasePublishableKey, supabaseUrl } from "@/lib/supabase/env";
 
 // Routes reachable without signing in. Everything else redirects to /login.
-const PUBLIC_PATHS = ["/", "/login", "/auth"];
+const PUBLIC_PATHS = ["/", "/login", "/signup", "/auth"];
 
 function isPublic(pathname: string): boolean {
   return PUBLIC_PATHS.some((p) => pathname === p || (p !== "/" && pathname.startsWith(`${p}/`)));
